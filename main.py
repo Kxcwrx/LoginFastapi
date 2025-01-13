@@ -4,16 +4,15 @@ import pyodbc
 
 app = FastAPI()
 
-# Configuración de la conexión a la base de datos
+
 DATABASE_CONFIG = {
     "server": "localhost",
     "database": "Logins",
-    "username": "sa",           # Cambia esto por tu usuario de SQL Server
-    "password": "123456",       # Cambia esto por tu contraseña de SQL Server
+    "username": "sa",           
+    "password": "123456",       
     "driver": "ODBC Driver 17 for SQL Server"
 }
 
-# Función para obtener la conexión
 def get_db_connection():
     conn_str = (
         f"DRIVER={DATABASE_CONFIG['driver']};"
@@ -24,7 +23,6 @@ def get_db_connection():
     )
     return pyodbc.connect(conn_str)
 
-# Modelo de solicitud para el login
 class LoginRequest(BaseModel):
     nombre_usuario: str
     contrasena: str
@@ -38,12 +36,11 @@ def validar_login(request: LoginRequest):
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Ejecutar el procedimiento almacenado
         cursor.execute("EXEC SP_ValidarLogin ?, ?", request.nombre_usuario, request.contrasena)
         result = cursor.fetchone()
 
         if result:
-            mensaje = result[0]  # Primer columna del resultado devuelto por el SP
+            mensaje = result[0] 
             if mensaje == "Login exitoso":
                 return {"mensaje": mensaje, "usuario": request.nombre_usuario}
             else:

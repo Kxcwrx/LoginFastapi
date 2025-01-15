@@ -1,9 +1,23 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pyodbc
+from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
+# Configura CORS para permitir solicitudes de cualquier origen
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Monta la carpeta "frontend" (que contiene tus archivos estáticos) como "static"
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 DATABASE_CONFIG = {
     "server": "localhost",
@@ -47,6 +61,32 @@ def validar_login(request: LoginRequest):
                 raise HTTPException(status_code=401, detail=mensaje)
         else:
             raise HTTPException(status_code=500, detail="Error inesperado en el servidor")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+class RegisterRequest(BaseModel):
+    nombre_usuario: str
+    contrasena: str
+
+@app.post("/register")
+def registrar_usuario(request: RegisterRequest):
+    conn = None
+    cursor = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("EXEC SP_RegistrarUsuario ?, ?", request.nombre_usuario, request.contrasena)
+        conn.commit()
+
+        # Enviar una respuesta JSON indicando éxito
+        return {"mensaje": "Registro exitoso"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

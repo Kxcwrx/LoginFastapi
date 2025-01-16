@@ -1,13 +1,36 @@
 document.getElementById('register-form').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const username = document.getElementById('reg-username').value;
+  const username = document.getElementById('reg-username').value.trim();
   const password = document.getElementById('reg-password').value;
   const confirmPassword = document.getElementById('reg-confirm-password').value;
 
+  const message = document.getElementById('register-message');
+  message.style.color = 'red';
+
+  // Validaciones del cliente
+  if (!username || username.length < 3) {
+    message.textContent = 'El nombre de usuario debe tener al menos 3 caracteres.';
+    return;
+  }
+
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    message.textContent = 'El nombre de usuario solo puede contener letras, números y guiones bajos.';
+    return;
+  }
+
+  if (password.length < 6) {
+    message.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+    return;
+  }
+
+  if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+    message.textContent = 'La contraseña debe contener letras y números.';
+    return;
+  }
+
   if (password !== confirmPassword) {
-    document.getElementById('register-message').style.color = 'red';
-    document.getElementById('register-message').textContent = 'Las contraseñas no coinciden.';
+    message.textContent = 'Las contraseñas no coinciden.';
     return;
   }
 
@@ -26,17 +49,16 @@ document.getElementById('register-form').addEventListener('submit', async (e) =>
     const data = await response.json();
 
     if (response.ok) {
-      document.getElementById('register-message').style.color = 'green';
-      document.getElementById('register-message').textContent = 'Usuario registrado exitosamente.';
+      message.style.color = 'green';
+      message.textContent = 'Usuario registrado exitosamente.';
       setTimeout(() => {
-        window.location.href = '/static/index.html'; // Redirige a index.html después de 2 segundos
+        window.location.href = '/static/index.html';
       }, 2000);
     } else {
-      document.getElementById('register-message').style.color = 'red';
-      document.getElementById('register-message').textContent = data.detail || 'Error al registrar usuario.';
+      message.textContent = data.detail || 'Error al registrar usuario.';
     }
   } catch (error) {
     console.error('Error:', error);
-    document.getElementById('register-message').textContent = 'Error de conexión.';
+    message.textContent = 'Error de conexión.';
   }
 });

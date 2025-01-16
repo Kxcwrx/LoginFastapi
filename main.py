@@ -58,7 +58,7 @@ def validar_login(request: LoginRequest):
             if mensaje == "Login exitoso":
                 return {"mensaje": mensaje, "usuario": request.nombre_usuario}
             else:
-                raise HTTPException(status_code=401, detail=mensaje)
+                raise HTTPException(status_code="", detail="Usuario o contraseña incorrectos")
         else:
             raise HTTPException(status_code=500, detail="Error inesperado en el servidor")
     except Exception as e:
@@ -79,6 +79,10 @@ def registrar_usuario(request: RegisterRequest):
     conn = None
     cursor = None
     try:
+        # Validación del lado del servidor para la contraseña
+        if len(request.contrasena) < 6 or not any(c.isalpha() for c in request.contrasena) or not any(c.isdigit() for c in request.contrasena):
+            raise HTTPException(status_code=400, detail="La contraseña debe tener al menos 6 caracteres, incluyendo al menos una letra y un número.")
+
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -87,6 +91,8 @@ def registrar_usuario(request: RegisterRequest):
 
         # Enviar una respuesta JSON indicando éxito
         return {"mensaje": "Registro exitoso"}
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

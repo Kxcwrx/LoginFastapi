@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro</title>
-  <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="login-container">
@@ -16,7 +10,13 @@
       <button type="submit">Registrar</button>
     </form>
     <p id="register-message"></p>
+    <button id="back-to-login-btn">Volver</button>
   </div>
   <script src="register.js"></script>
+  <script>
+    document.getElementById('back-to-login-btn').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
 </body>
 </html>

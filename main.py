@@ -10,7 +10,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://stalwart-trifle-a3643d.netlify.app"],  # Cambia esto a tu dominio de frontend
+    allow_origins=[
+        "https://stalwart-trifle-a3643d.netlify.app",
+        "https://loginfastapi20.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

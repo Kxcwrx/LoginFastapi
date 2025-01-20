@@ -7,9 +7,10 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 
 # Configuración CORS para permitir solicitudes de cualquier origen
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://stalwart-trifle-a3643d.netlify.app"],  # Cambia esto a tu dominio de frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,7 +41,7 @@ class LoginRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the FastAPI application"}
+    return {"message": "Welcome to the FastAPI"}
 
 
 # Endpoint para validar el login

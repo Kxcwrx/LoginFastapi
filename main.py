@@ -1,13 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pyodbc
-from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
-# Configura CORS para permitir solicitudes de cualquier origen
+# Configuración CORS para permitir solicitudes de cualquier origen
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,14 +15,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Monta la carpeta "frontend" (que contiene tus archivos estáticos) como "static"
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 DATABASE_CONFIG = {
-    "server": "localhost",
+    "server": "2800:e2:9680:1043:39f1:c2e1:a492:5c33",
     "database": "Logins",
-    "username": "sa",           
-    "password": "123456",       
+    "username": "sa",
+    "password": "123456",
     "driver": "ODBC Driver 17 for SQL Server"
 }
 
@@ -54,11 +50,11 @@ def validar_login(request: LoginRequest):
         result = cursor.fetchone()
 
         if result:
-            mensaje = result[0] 
+            mensaje = result[0]
             if mensaje == "Login exitoso":
                 return {"mensaje": mensaje, "usuario": request.nombre_usuario}
             else:
-                raise HTTPException(status_code="", detail="Usuario o contraseña incorrectos")
+                raise HTTPException(status_code=400, detail="Usuario o contraseña incorrectos")
         else:
             raise HTTPException(status_code=500, detail="Error inesperado en el servidor")
     except Exception as e:
@@ -68,6 +64,7 @@ def validar_login(request: LoginRequest):
             cursor.close()
         if conn:
             conn.close()
+
 
 
 class RegisterRequest(BaseModel):
@@ -86,10 +83,17 @@ def registrar_usuario(request: RegisterRequest):
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # Verificar si el usuario ya existe
+        cursor.execute("SELECT COUNT(*) FROM Usuarios WHERE NombreUsuario = ?", request.nombre_usuario)
+        user_exists = cursor.fetchone()[0]
+
+        if user_exists:
+            return {"mensaje": "El nombre de usuario ya está en uso."}
+
+        # Insertar el nuevo usuario
         cursor.execute("EXEC SP_RegistrarUsuario ?, ?", request.nombre_usuario, request.contrasena)
         conn.commit()
 
-        # Enviar una respuesta JSON indicando éxito
         return {"mensaje": "Registro exitoso"}
     except HTTPException as e:
         raise e

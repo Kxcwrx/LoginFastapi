@@ -44,7 +44,7 @@ class LoginRequest(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to the FastAPI"}
+    return {"message": "Bienvenido FastAPI"}
 
 
 # Endpoint para validar el login

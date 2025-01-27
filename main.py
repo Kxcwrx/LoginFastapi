@@ -13,15 +13,16 @@ app.add_middleware(
     allow_origins=[
         "https://stalwart-trifle-a3643d.netlify.app",
         "https://loginfastapi20.onrender.com",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "http://localhost:5500"
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST", "GET", "OPTIONS"],
     allow_headers=["*"],
 )
 
 DATABASE_CONFIG = {
-    "server": "2800:e2:9680:1043:39f1:c2e1:a492:5c33",
+    "server": "2800:e2:9680:1043:d966:b8fb:572:fc85",
     "database": "Logins",
     "username": "sa",
     "password": "123456",

@@ -12,7 +12,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://stalwart-trifle-a3643d.netlify.app",
-        "https://loginfastapi20.onrender.com"
+        "https://loginfastapi20.onrender.com",
+        "http://127.0.0.1:5500"
     ],
     allow_credentials=True,
     allow_methods=["*"],
